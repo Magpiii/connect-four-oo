@@ -28,7 +28,7 @@ class Game {
  */
 
 makeBoard() {
-  for (let y = 0; y < height; y++) {
+  for (let y = 0; y < Game.height; y++) {
     board.push(Array.from({ length: width }));
     }
   }
@@ -41,9 +41,9 @@ makeHtmlBoard() {
   // make column tops (clickable area for adding a piece to that column)
   const top = document.createElement('tr');
   top.setAttribute('id', 'column-top');
-  top.addEventListener('click', handleClick);
+  top.addEventListener('click', this.handleClick);
 
-  for (let x = 0; x < width; x++) {
+  for (let x = 0; x < this.width; x++) {
     const headCell = document.createElement('td');
     headCell.setAttribute('id', x);
     top.append(headCell);
@@ -52,10 +52,10 @@ makeHtmlBoard() {
   board.append(top);
 
   // make main part of board
-  for (let y = 0; y < height; y++) {
+  for (let y = 0; y < this.height; y++) {
     const row = document.createElement('tr');
 
-    for (let x = 0; x < width; x++) {
+    for (let x = 0; x < this.width; x++) {
       const cell = document.createElement('td');
       cell.setAttribute('id', `${y}-${x}`);
       row.append(cell);
@@ -117,23 +117,23 @@ makeHtmlBoard() {
     const x = +evt.target.id;
 
     // get next spot in column (if none, ignore click)
-    const y = findSpotForCol(x);
+    const y = this.findSpotForCol(x);
     if (y === null) {
       return;
     }
 
     // place piece in board and add to HTML table
     board[y][x] = currPlayer;
-    placeInTable(y, x);
+    this.placeInTable(y, x);
     
     // check for win
     if (checkForWin()) {
-      return endGame(`Player ${currPlayer} won!`);
+      return this.endGame(`Player ${currPlayer} won!`);
     }
     
     // check for tie
     if (board.every(row => row.every(cell => cell))) {
-      return endGame('Tie!');
+      return this.endGame('Tie!');
     }
       
     // switch players
@@ -151,9 +151,9 @@ makeHtmlBoard() {
       return cells.every(
         ([y, x]) =>
           y >= 0 &&
-          y < HEIGHT &&
+          y < this.height &&
           x >= 0 &&
-          x < WIDTH &&
+          x < this.width &&
           board[y][x] === currPlayer
       );
     }
