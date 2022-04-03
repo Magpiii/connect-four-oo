@@ -9,7 +9,8 @@
 class Game {
   width = 7;
   height = 6;
-  currPlayer = 1;
+  players = [1, 2];
+  currPlayer = this.players[0];
   board = [];
 
   constructor(width, height, currPlayer, board) {
@@ -29,7 +30,7 @@ class Game {
 
 makeBoard() {
   for (let y = 0; y < Game.height; y++) {
-    board.push(Array.from({ length: width }));
+    this.board.push(Array.from({ length: width }));
     }
   }
 
@@ -80,8 +81,8 @@ makeHtmlBoard() {
   /** findSpotForCol: given column x, return top empty y (null if filled) */
 
   findSpotForCol(x) {
-    for (let y = height - 1; y >= 0; y--) {
-      if (!board[y][x]) {
+    for (let y = this.height - 1; y >= 0; y--) {
+      if (!this.board[y][x]) {
         return y;
       }
     }
@@ -93,7 +94,7 @@ makeHtmlBoard() {
   placeInTable(y, x) {
     const piece = document.createElement('div');
     piece.classList.add('piece');
-    piece.classList.add(`p${currPlayer}`);
+    piece.style.backgroundColor = this.currPlayer.color;
     piece.style.top = -50 * (y + 2);
 
     const spot = document.getElementById(`${y}-${x}`);
@@ -118,26 +119,27 @@ makeHtmlBoard() {
 
     // get next spot in column (if none, ignore click)
     const y = this.findSpotForCol(x);
+
     if (y === null) {
       return;
     }
 
     // place piece in board and add to HTML table
-    board[y][x] = currPlayer;
+    this.board[y][x] = this.currPlayer;
     this.placeInTable(y, x);
     
     // check for win
-    if (checkForWin()) {
-      return this.endGame(`Player ${currPlayer} won!`);
+    if (this.checkForWin()) {
+      return this.endGame(`Player ${this.currPlayer} won!`);
     }
     
     // check for tie
-    if (board.every(row => row.every(cell => cell))) {
+    if (this.board.every(row => row.every(cell => cell))) {
       return this.endGame('Tie!');
     }
       
     // switch players
-    currPlayer = currPlayer === 1 ? 2 : 1;
+    this.currPlayer = this.players[0] ? this.players[1] : this.players[0];
   }
 
 /** checkForWin: check board cell-by-cell for "does a win start here?" */
@@ -154,12 +156,12 @@ makeHtmlBoard() {
           y < this.height &&
           x >= 0 &&
           x < this.width &&
-          board[y][x] === currPlayer
+          this.board[y][x] === this.currPlayer
       );
     }
 
-    for (let y = 0; y < HEIGHT; y++) {
-      for (let x = 0; x < WIDTH; x++) {
+    for (let y = 0; y < this.height; y++) {
+      for (let x = 0; x < this.width; x++) {
         // get "check list" of 4 cells (starting here) for each of the different
         // ways to win
         const horiz = [[y, x], [y, x + 1], [y, x + 2], [y, x + 3]];
@@ -176,7 +178,18 @@ makeHtmlBoard() {
   }
 }
 
+class Player {
+  color;
+
+  constructor(color) {
+    this.color = color;
+  }
+}
+
 new Game(7, 6);
+
+let p1 = new Player(document.getElementById('p1-color').value);
+let p2 = new Player(document.getElementById('p2-color').value);
 
 // const WIDTH = 7;
 // const HEIGHT = 6;
